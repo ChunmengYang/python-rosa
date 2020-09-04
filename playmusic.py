@@ -6,7 +6,7 @@ from time import sleep
 
 def playmusic():
 	mixer.init()
-	mixer.music.load("/Users/mash5/Documents/python3-workspace/python-rosa/music/1.wav")
+	mixer.music.load("/home/pi/Desktop/python-rosa/music/1.mp3")
 	mixer.music.play()
 
 playmusic()

@@ -13,14 +13,25 @@ import pyaudio
 
 def waveplot():
 	#y为长度等于采样率sr*时间的音频向量
-	y,sr = librosa.load("/Users/mash5/Documents/python3-workspace/python-rosa/music/1/mp3/0001.mp3", sr=None)
+	y, sr = librosa.load("/Users/mash5/Documents/python3-workspace/python-rosa/music/1/mp3/0001.mp3", sr=None, mono=True)
 
 	onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=512, aggregate=np.median)
-	print(onset_env)
+
+	peaks = librosa.util.peak_pick(onset_env, 3, 3, 3, 5, 0.6, 10)
+
+	tempo, beats = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr, hop_length=512)
+		
+	times = librosa.frames_to_time(beats, sr=sr)
+
+	# print(peaks)
+	print(tempo)
+	print(beats)
+	print(times)
+
 	plt.figure()
 	#创建波形图
+	# librosa.display.waveplot(y, sr)
 	librosa.display.waveplot(y, sr)
-	librosa.display.waveplot(onset_env, sr)
 	#显示波形图
 	plt.show()
 
@@ -65,7 +76,7 @@ def remix():
 
 def beats_slice():
 	#y为长度等于采样率sr*时间的音频向量
-	y1, sr = librosa.load("/Users/mash5/Documents/python3-workspace/python-rosa/music/1/mp3/0002.mp3", sr=None)
+	y1, sr = librosa.load("/home/pi/Desktop/python-rosa/music/1/mp3/0002.mp3", sr=None)
 	print(y1.size)
 	tempo, beats = librosa.beat.beat_track(y=y1, sr=sr, hop_length=512)
 	print(beats)
@@ -103,7 +114,7 @@ def beats_slice():
 	p.terminate()
 
 
-sensor_value_list = [0, 0, 0, 0, 0]
+sensor_value_list = [1, 1, 0, 1, 0]
 # 设置超声波数值
 def set_sensor_value(values):
 	global sensor_value_list
@@ -120,9 +131,9 @@ def dy_remix():
 	global sensor_value_list
 	sensor_count = len(sensor_value_list)
 
-	PATH = "/Users/mash5/Documents/python3-workspace/python-rosa/music/"
+	PATH = "/home/pi/Desktop/python-rosa/music/"
 	def get_audio_series(p_index, m_index, sr):
-		y_temp, sr_temp = librosa.load(PATH + str(p_index) + "/mp3/000" + str(m_index) +  ".mp3" , sr=sr)
+		y_temp, sr_temp = librosa.load(PATH + str(p_index) + "/mp3/000" + str(m_index) +  ".mp3", sr=sr)
 		return y_temp, sr_temp
 
 
@@ -175,6 +186,7 @@ def dy_remix():
 
 		audios_pool.append(audios_list)
 		beat_samples_pool.append(beat_samples_list)
+		print("========%d=========",x)
 
 
 	# 上一次互动参数
@@ -278,9 +290,8 @@ if __name__ == '__main__':
 		if msg == 'c':
 			sys.exit()
 		else:
-			print(msg)
-			# values = msg.split(',');
-			# for x in range(0, len(values)):
-			# 	values[x] = int(values[x])
+			values = msg.split(',');
+			for x in range(0, len(values)):
+				values[x] = int(values[x])
 
-			set_sensor_value(msg)
+			set_sensor_value(values)
